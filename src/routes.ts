@@ -1,12 +1,12 @@
 import express from "express";
 import { getTextMeta } from "./controllers/text";
+import { signUp, signIn } from "./controllers/user";
+import { authenticateJWT } from "./middlewares/auth";
 
 const router = express.Router();
 
-router.get("/text/:id/words", getTextMeta);
-router.get("/text/:id/chars", getTextMeta);
-router.get("/text/:id/sentences", getTextMeta);
-router.get("/text/:id/paragraphs", getTextMeta);
-router.get("/text/:id/longest-word", getTextMeta);
+router.post("/sign-up", signUp);
+router.post("/sign-in", signIn);
+router.get("/text/:id/:type", authenticateJWT, getTextMeta);
 
 export default router;
