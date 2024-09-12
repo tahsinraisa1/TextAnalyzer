@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import Text from "../models/text";
 import mongoose, { mongo } from "mongoose";
 import { getTextMetrics } from "../utils/metricHelpers";
+import { logger } from "../utils/logger";
+import { handleServerErrors } from "../utils/errorHandler";
 
 export const getTextList = async (req: Request, res: Response) => {
   try {
@@ -10,7 +12,7 @@ export const getTextList = async (req: Request, res: Response) => {
       .then((data) => res.status(200).json({ data }))
       .catch((err) => res.status(400).json({ error: err?.message }));
   } catch (error: any) {
-    return res.status(500).json({ error: error?.message });
+    handleServerErrors(res, error);
   }
 };
 
@@ -24,7 +26,7 @@ export const getTextMeta = async (req: Request, res: Response) => {
     const result = getTextMetrics(textData?.data, type);
     return res.json({ data: { [type]: result } });
   } catch (error: any) {
-    return res.status(500).json({ error: error?.message });
+    handleServerErrors(res, error);
   }
 };
 
@@ -38,6 +40,6 @@ export const addText = async (req: Request, res: Response) => {
       .then(() => res.status(201).json({ message: "Text saved. " }))
       .catch((err) => res.status(400).json({ error: err?.message }));
   } catch (error: any) {
-    return res.status(500).json({ error: error?.message });
+    handleServerErrors(res, error);
   }
 };

@@ -5,6 +5,7 @@ import { getTextMetrics } from "../utils/metricHelpers";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { jwtSecret } from "../configs";
+import { handleServerErrors } from "../utils/errorHandler";
 
 export const signUp = async (req: Request, res: Response) => {
   try {
@@ -19,7 +20,7 @@ export const signUp = async (req: Request, res: Response) => {
     });
     return res.status(201).json({ data: { token } });
   } catch (error: any) {
-    return res.status(400).json({ error: error.message });
+    handleServerErrors(res, error);
   }
 };
 
@@ -39,6 +40,6 @@ export const signIn = async (req: Request, res: Response) => {
     });
     return res.json({ data: { token } });
   } catch (error: any) {
-    return res.status(400).json({ error: error.message });
+    handleServerErrors(res, error);
   }
 };

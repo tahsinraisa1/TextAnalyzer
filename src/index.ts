@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import allRoutes from "./routes";
 import rateLimit from "express-rate-limit";
+import { logger } from "./utils/logger";
 
 const app = express();
 dotenv.config();
@@ -19,8 +20,8 @@ app.use("/v1/api", allRoutes);
 
 mongoose
   .connect(process.env.MONGO_DB_URI as string, {})
-  .then(() => console.log("MongoDB connection successful"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .then(() => logger.warn("MongoDB connection successful"))
+  .catch((err) => logger.error("MongoDB connection error:", err));
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
