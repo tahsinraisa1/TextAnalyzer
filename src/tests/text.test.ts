@@ -4,7 +4,6 @@ import { authenticateJWT } from "../middlewares/auth";
 import { getTextMeta } from "../controllers/text";
 import { mockTextData } from "./mocks";
 import { getTextMetrics } from "../utils/metricHelpers";
-import { clear } from "console";
 
 const app = express();
 app.use(express.json());
@@ -23,27 +22,27 @@ describe("GET /text/:id/:type", () => {
     expect(response.body.words).toBe(16);
   });
 
-  it("should handle an empty string", async () => {
+  it("should return the correct character count for a given text", async () => {
     const response = await request(app).get(
-      "/text/66e1d7062dbeb87e9952f281/chars"
+      "/text/66e1d7062dbeb87e9952f280/chars"
     );
     expect(response.status).toBe(200);
-    expect(response.body.wordCount).toBe(0);
+    expect(response.body.chars).toBe(75);
   });
 
-  it("should handle text with multiple spaces between words", async () => {
-    const response = await request(app)
-      .post("/wordCount")
-      .send({ text: "Hello    world    " });
+  it("should return the correct paragraph count for a given text", async () => {
+    const response = await request(app).get(
+      "/text/66e1d7062dbeb87e9952f280/paragraphs"
+    );
     expect(response.status).toBe(200);
-    expect(response.body.wordCount).toBe(2);
+    expect(response.body.paragraphs).toBe(1);
   });
 
-  it("should return 400 for invalid input", async () => {
-    const response = await request(app)
-      .post("/wordCount")
-      .send({ text: 12345 });
-    expect(response.status).toBe(400);
-    expect(response.text).toBe("Invalid input");
+  it("should return the correct longest words for a given text", async () => {
+    const response = await request(app).get(
+      "/text/66e1d7062dbeb87e9952f280/longest-words"
+    );
+    expect(response.status).toBe(200);
+    expect(response.body["longest-words"]).toStrictEqual(["quick", "brown", "jumps", "slept"]);
   });
 });
