@@ -10,13 +10,14 @@ export const signUp = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ error: "Email & Password are required!" });
+      return res.status(400).json({ error: "Email & Password are required!" });
     }
     const user = new User({ email, password });
     await user.save();
-    return res.status(201).json({ message: "User registered" });
+    const token = jwt.sign({ id: user._id }, jwtSecret, {
+      expiresIn: "1h",
+    });
+    return res.status(201).json({ data: { token } });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
@@ -26,19 +27,17 @@ export const signIn = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ error: "Email & Password are required!" });
+      return res.status(400).json({ error: "Email & Password are required!" });
     }
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ error: "Invalid email or password"});
+      return res.status(401).json({ error: "Invalid email or password" });
     }
 
     const token = jwt.sign({ id: user._id }, jwtSecret, {
       expiresIn: "1h",
     });
-    res.json({ data: { token } });
+    return res.json({ data: { token } });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
